@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: example_dataset
+    database: shining-reality-375617
+    schema: example_dataset
+    tables:
+      - name: example_table

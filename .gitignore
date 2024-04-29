@@ -1,0 +1,11 @@
+terraform.tfstate
+terraform.tfstate.backup
+dbt-env
+.terraform.lock.hcl
+shining-reality-375617-b787102c87aa.json # GCP service accoutn
+logs
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+shining-reality-375617-b787102c87aa.json
+.terraform
