@@ -1,0 +1,1 @@
+![Architecture Diagram](paper.drawio-1.png)
