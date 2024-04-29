@@ -6,7 +6,6 @@ resource "google_bigquery_dataset" "silver_example_dataset" {
   dataset_id                  = "silver_example"
   location                    = "US"
   delete_contents_on_destroy  = false
-
 }
 
 resource "google_bigquery_dataset" "example_dataset" {
