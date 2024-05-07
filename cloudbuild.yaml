@@ -1,5 +1,5 @@
 options:
-  logging: CLOUD_LOGGING_ONLY  # Set this to CLOUD_LOGGING_ONLY or specify a logs bucket
+  logging: NONE  # Disables logging for the build
 
 steps:
   # Step to activate virtual environment and install dbt
@@ -19,9 +19,9 @@ steps:
     args:
       - '-c'
       - |
-        if [ ! -z "$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')" ]; then
+        CHANGED_FILES=$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')
+        if [ ! -z "$CHANGED_FILES" ]; then
           pip install sqlfluff
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')
           sqlfluff lint --config .sqlfluff $CHANGED_FILES
         else
           echo "No SQL files to lint."
