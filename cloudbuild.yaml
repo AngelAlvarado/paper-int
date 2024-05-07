@@ -19,10 +19,10 @@ steps:
     args:
       - '-c'
       - |
-        CHANGED_FILES=$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')
-        if [ ! -z "${CHANGED_FILES}" ]; then
+        _CHANGED_FILES=$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')
+        if [ ! -z "${_CHANGED_FILES}" ]; then
           pip install sqlfluff
-          sqlfluff lint --config .sqlfluff ${CHANGED_FILES}
+          sqlfluff lint --config .sqlfluff ${_CHANGED_FILES}
         else
           echo "No SQL files to lint."
         fi
@@ -41,3 +41,4 @@ steps:
 # Define substitution variables that might be used
 substitutions:
   _DBT_TARGET: 'dev'
+  _CHANGED_FILES: 'dev'
