@@ -1,5 +1,5 @@
 options:
-  logging: NONE  # Disables logging for the build
+  logging: NONE  # This option disables all logging
 
 steps:
   # Step to activate virtual environment and install dbt
@@ -13,16 +13,16 @@ steps:
         pip install dbt-snowflake==1.7.1
         dbt deps
 
-  # Step to run linting
+  # Step to run linting with proper handling of local variables
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
         CHANGED_FILES=$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')
-        if [ ! -z "$CHANGED_FILES" ]; then
+        if [ ! -z "${CHANGED_FILES}" ]; then
           pip install sqlfluff
-          sqlfluff lint --config .sqlfluff $CHANGED_FILES
+          sqlfluff lint --config .sqlfluff ${CHANGED_FILES}
         else
           echo "No SQL files to lint."
         fi
@@ -33,10 +33,9 @@ steps:
     args:
       - '-c'
       - |
-        _DBT_TARGET="dev" # Adjust based on branch logic
-        if [[ "$_DBT_TARGET" != "none" ]]; then
-          dbt run --target $_DBT_TARGET
-          dbt test --target $_DBT_TARGET
+        if [[ "${_DBT_TARGET}" != "none" ]]; then
+          dbt run --target ${_DBT_TARGET}
+          dbt test --target ${_DBT_TARGET}
         fi
 
 # Define substitution variables that might be used
