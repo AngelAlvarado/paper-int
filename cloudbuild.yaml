@@ -1,3 +1,6 @@
+options:
+  logging: CLOUD_LOGGING_ONLY  # Set this to CLOUD_LOGGING_ONLY or specify a logs bucket
+
 steps:
   # Step to activate virtual environment and install dbt
   - name: 'gcr.io/cloud-builders/gcloud'
