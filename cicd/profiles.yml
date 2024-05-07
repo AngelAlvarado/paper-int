@@ -1,0 +1,14 @@
+paper:
+  outputs:
+    dev:
+      schema: bronze_example
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      keyfile: ./shining-reality-375617-b787102c87aa.json
+      location: US
+      method: service-account
+      priority: interactive
+      project: shining-reality-375617
+      threads: 2
+      type: bigquery
+  target: dev

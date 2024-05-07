@@ -1,0 +1,46 @@
+steps:
+  # Step to activate virtual environment and install dbt
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        python -m venv /workspace/venv
+        source /workspace/venv/bin/activate
+        pip install dbt-snowflake==1.7.1
+        dbt deps
+
+  # Step to run linting
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if [ ! -z "$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')" ]; then
+          pip install sqlfluff
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')
+          sqlfluff lint --config .sqlfluff $CHANGED_FILES
+        else
+          echo "No SQL files to lint."
+        fi
+
+  # Step to run dbt commands based on conditions
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        _DBT_TARGET="dev" # Adjust based on branch logic
+        if [[ "$_DBT_TARGET" != "none" ]]; then
+          dbt run --target $_DBT_TARGET
+          dbt test --target $_DBT_TARGET
+        fi
+
+# Define substitution variables that might be used
+substitutions:
+  _DBT_TARGET: 'dev'
+
+# Trigger rules based on GitHub events
+triggerTemplate:
+  branchName: 'main'
+  tagName: 'v.*'
