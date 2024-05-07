@@ -6,3 +6,4 @@ sources:
     schema: example_dataset
     tables:
       - name: example_table
+      - name: bronze_user_messages
