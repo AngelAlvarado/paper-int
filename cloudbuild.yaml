@@ -39,8 +39,3 @@ steps:
 # Define substitution variables that might be used
 substitutions:
   _DBT_TARGET: 'dev'
-
-# Trigger rules based on GitHub events
-triggerTemplate:
-  branchName: 'main'
-  tagName: 'v.*'
