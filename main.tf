@@ -37,6 +37,52 @@ resource "google_bigquery_table" "example_table" {
     ])
 }
 
+resource "google_bigquery_table" "bronze_user_messages" {
+  dataset_id = google_bigquery_dataset.example_dataset.dataset_id
+  table_id   = "bronze_user_messages"
+
+  schema = jsonencode([
+    {
+      "name": "user",
+      "type": "RECORD",
+      "mode": "NULLABLE",
+      "fields": [
+        {
+          "name": "name",
+          "type": "STRING",
+          "mode": "REQUIRED"
+        },
+        {
+          "name": "email",
+          "type": "STRING",
+          "mode": "NULLABLE"
+        },
+        {
+          "name": "user_id",
+          "type": "STRING",
+          "mode": "REQUIRED"
+        }
+      ]
+    },
+    {
+      "name": "message_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "direction",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "timestamp",
+      "type": "TIMESTAMP",
+      "mode": "NULLABLE"
+    }
+  ])
+}
+
+
 resource "google_storage_bucket" "bucket" {
   name          = "${var.project_id}-functions"
   location      = var.region

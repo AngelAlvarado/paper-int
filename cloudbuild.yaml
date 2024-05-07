@@ -1,3 +1,6 @@
+options:
+  logging: NONE  # This option disables all logging
+
 steps:
   # Step to activate virtual environment and install dbt
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -10,16 +13,16 @@ steps:
         pip install dbt-snowflake==1.7.1
         dbt deps
 
-  # Step to run linting
+  # Step to run linting with proper handling of local variables
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        if [ ! -z "$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')" ]; then
+        _CHANGED_FILES=$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')
+        if [ ! -z "${_CHANGED_FILES}" ]; then
           pip install sqlfluff
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD --diff-filter=d | grep '\.sql$')
-          sqlfluff lint --config .sqlfluff $CHANGED_FILES
+          sqlfluff lint --config .sqlfluff ${_CHANGED_FILES}
         else
           echo "No SQL files to lint."
         fi
@@ -30,17 +33,12 @@ steps:
     args:
       - '-c'
       - |
-        _DBT_TARGET="dev" # Adjust based on branch logic
-        if [[ "$_DBT_TARGET" != "none" ]]; then
-          dbt run --target $_DBT_TARGET
-          dbt test --target $_DBT_TARGET
+        if [[ "${_DBT_TARGET}" != "none" ]]; then
+          dbt run --target ${_DBT_TARGET}
+          dbt test --target ${_DBT_TARGET}
         fi
 
 # Define substitution variables that might be used
 substitutions:
   _DBT_TARGET: 'dev'
-
-# Trigger rules based on GitHub events
-triggerTemplate:
-  branchName: 'main'
-  tagName: 'v.*'
+  _CHANGED_FILES: 'dev'
